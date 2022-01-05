@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @Setter
 @Table(name = "rebels")
 @Entity
-public class Rebel {
+public class Rebel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

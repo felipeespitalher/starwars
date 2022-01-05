@@ -6,12 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
 @Table(name = "rebel_items")
 @Setter
-public class RebelItem {
+public class RebelItem implements Serializable {
 
     @Id
     @ManyToOne
@@ -19,6 +20,7 @@ public class RebelItem {
     private Rebel rebel;
 
     @Id
+    @Enumerated(EnumType.STRING)
     private Item item;
 
     @Column(nullable = false)

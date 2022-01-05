@@ -4,13 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Getter
 @Table(name = "rebel_locations")
 @Setter
-public class RebelLocation {
+public class RebelLocation implements Serializable {
 
     @Id
     @OneToOne

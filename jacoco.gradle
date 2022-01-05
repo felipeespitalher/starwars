@@ -1,0 +1,36 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.5"
+    reportsDir = file("$buildDir/reports")
+}
+
+test {
+    jacoco {
+        enabled = true
+        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+        csv.enabled true
+        html.destination file("${buildDir}/jacoco/html")
+        xml.destination file("${buildDir}/jacoco/xml/jacocoTest.xml")
+        csv.destination file("${buildDir}/jacoco/csv/jacocoTest.csv")
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 58.0
+            }
+        }
+    }
+}
