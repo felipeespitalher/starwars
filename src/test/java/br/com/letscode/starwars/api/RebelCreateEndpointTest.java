@@ -1,7 +1,6 @@
 package br.com.letscode.starwars.api;
 
 import br.com.letscode.starwars.data.dto.RebelDTO;
-import br.com.letscode.starwars.data.dto.RebelDetailDTO;
 import br.com.letscode.starwars.data.dto.RebelLocationDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,12 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static br.com.letscode.starwars.JsonUtils.parse;
 import static br.com.letscode.starwars.JsonUtils.writeValueAsString;
-import static br.com.letscode.starwars.RebelUtils.toRebel;
+import static br.com.letscode.starwars.DataUtils.toRebel;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RebelApiTest {
+public class RebelCreateEndpointTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -102,77 +99,6 @@ public class RebelApiTest {
     }
 
     @Test
-    @DisplayName("Get rebel by id")
-    public void whenGet() throws Exception {
-        var rebel = toCreateRebel();
-
-        var request = get("/v1/rebel/" + rebel.getId())
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").value(rebel.getName()))
-                .andExpect(jsonPath("$.birth").value(rebel.getBirth().toString()))
-                .andExpect(jsonPath("$.gender").value(rebel.getGender().name()))
-                .andExpect(jsonPath("$.traitor").value(false))
-                .andExpect(jsonPath("$.inventory.GUN").value(10))
-                .andExpect(jsonPath("$.inventory.MUNITION").value(10))
-                .andExpect(jsonPath("$.inventory.WATER").value(10))
-                .andExpect(jsonPath("$.inventory.FOOD").value(10))
-                .andExpect(jsonPath("$.location.description").value(rebel.getLocation().getDescription()))
-                .andExpect(jsonPath("$.location.longitude").value("10.0"))
-                .andExpect(jsonPath("$.location.latitude").value("0.0"));
-    }
-
-    @Test
-    @DisplayName("Get rebel by id with empty database")
-    public void whenGet_withEmptyDatabase() throws Exception {
-        var request = get("/v1/rebel/123")
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("Update location with success")
-    public void whenUpdateLocation_withSuccess() throws Exception {
-        var location = new RebelLocationDTO();
-        location.setDescription("Foobar");
-        location.setLatitude(BigDecimal.ZERO);
-        location.setLongitude(BigDecimal.TEN);
-
-        var content = writeValueAsString(location);
-        var request = patch("/v1/rebel/1/location")
-                .content(content)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Update location without required parameters")
-    public void whenUpdateLocation_withoutRequiredParameters() throws Exception {
-        var location = new RebelLocationDTO();
-
-        var content = writeValueAsString(location);
-        var request = patch("/v1/rebel/1/location")
-                .content(content)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.errors[?(@.field == \"latitude\" && @.message == \"Por favor, informe a latitude da localização do rebelde\")]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field == \"longitude\" && @.message == \"Por favor, informe a longitude da localização do rebelde\")]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field == \"description\" && @.message == \"Por favor, informe a descrição da localização do rebelde\")]").exists());
-
-    }
-
-    @Test
     @DisplayName("Report a traitor rebel successfully")
     public void whenReportTraitor() throws Exception {
 
@@ -183,16 +109,5 @@ public class RebelApiTest {
                 .andExpect(status().isOk());
     }
 
-    private RebelDetailDTO toCreateRebel() throws Exception {
-        var content = toRebel();
-        var postRequest = post("/v1/rebel")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(writeValueAsString(content));
-        var response = mockMvc.perform(postRequest)
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        return parse(response, RebelDetailDTO.class);
-    }
 
 }
