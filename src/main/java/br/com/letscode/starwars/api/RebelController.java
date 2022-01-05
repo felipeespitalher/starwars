@@ -1,7 +1,9 @@
 package br.com.letscode.starwars.api;
 
 import br.com.letscode.starwars.data.dto.RebelDTO;
+import br.com.letscode.starwars.data.dto.RebelDetailDTO;
 import br.com.letscode.starwars.data.dto.RebelLocationDTO;
+import br.com.letscode.starwars.service.RebelFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 import static org.springframework.http.ResponseEntity.status;
 
@@ -17,24 +20,36 @@ import static org.springframework.http.ResponseEntity.status;
 @RequiredArgsConstructor
 public class RebelController {
 
+    private final RebelFacade facade;
+
     @PostMapping
-    public ResponseEntity<RebelDTO> create(@Valid @RequestBody RebelDTO request) {
-        return status(HttpStatus.CREATED).body(request);
+    public ResponseEntity<RebelDetailDTO> create(@Valid @RequestBody RebelDTO request) {
+        var rebel = facade.create(request);
+        return status(HttpStatus.CREATED).body(rebel);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<RebelDTO> get(@PathVariable Long id) {
-        return ResponseEntity.ok(new RebelDTO());
+    public ResponseEntity<RebelDetailDTO> get(@PathVariable Long id) {
+        var rebel = facade.get(id);
+        return ResponseEntity.ok(rebel);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<RebelDetailDTO>> search() {
+        var rebels = facade.search();
+        return ResponseEntity.ok(rebels);
     }
 
     @PatchMapping("{id}/location")
-    public ResponseEntity<Void> updateLocation(@PathVariable Long id, @Valid @RequestBody RebelLocationDTO request) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<RebelDetailDTO> updateLocation(@PathVariable Long id, @Valid @RequestBody RebelLocationDTO request) {
+        facade.updateLocation(id, request);
+        return get(id);
     }
 
-    @PatchMapping("{id}/traitor")
-    public ResponseEntity<Void> reportTraitor(@PathVariable Long id, @RequestParam Long traitor) {
-        return ResponseEntity.ok().build();
+    @PutMapping("{id}/traitor")
+    public ResponseEntity<RebelDetailDTO> reportTraitor(@PathVariable Long id) {
+        facade.reportTraitor(id);
+        return get(id);
     }
 
 }

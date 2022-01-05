@@ -1,4 +1,4 @@
-package br.com.letscode.starwars.messages.errors;
+package br.com.letscode.starwars.configuration.messages.errors;
 
 import lombok.Builder;
 import lombok.Getter;

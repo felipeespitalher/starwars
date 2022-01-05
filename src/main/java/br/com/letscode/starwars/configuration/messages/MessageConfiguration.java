@@ -1,4 +1,4 @@
-package br.com.letscode.starwars.messages;
+package br.com.letscode.starwars.configuration.messages;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;

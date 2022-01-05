@@ -1,6 +1,6 @@
-package br.com.letscode.starwars.messages.errors;
+package br.com.letscode.starwars.configuration.messages.errors;
 
-import br.com.letscode.starwars.messages.MessageProvider;
+import br.com.letscode.starwars.configuration.messages.MessageProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.NoSuchMessageException;

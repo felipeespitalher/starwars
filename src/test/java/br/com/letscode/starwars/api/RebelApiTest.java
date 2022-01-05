@@ -4,6 +4,7 @@ import br.com.letscode.starwars.JsonUtils;
 import br.com.letscode.starwars.data.dto.RebelDTO;
 import br.com.letscode.starwars.data.dto.RebelLocationDTO;
 import br.com.letscode.starwars.data.enumeration.Gender;
+import br.com.letscode.starwars.data.enumeration.Item;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,12 +37,19 @@ public class RebelApiTest {
         location.setDescription("Foobar");
         location.setLatitude(BigDecimal.ZERO);
         location.setLongitude(BigDecimal.TEN);
+
+        var inventory = new HashMap<Item, Integer>();
+        inventory.put(Item.GUN, 10);
+        inventory.put(Item.MUNITION, 10);
+        inventory.put(Item.WATER, 10);
+        inventory.put(Item.FOOD, 10);
+
         var rebel = new RebelDTO();
         rebel.setName("Foobar");
         rebel.setBirth(LocalDate.now().minusYears(32));
         rebel.setGender(Gender.FEMALE);
         rebel.setLocation(location);
-        rebel.setInventory(new HashMap<>());
+        rebel.setInventory(inventory);
 
         var content = JsonUtils.writeValueAsString(rebel);
         var request = post("/v1/rebel")
@@ -49,7 +57,19 @@ public class RebelApiTest {
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.name").value(rebel.getName()))
+                .andExpect(jsonPath("$.birth").value(rebel.getBirth().toString()))
+                .andExpect(jsonPath("$.gender").value(rebel.getGender().name()))
+                .andExpect(jsonPath("$.traitor").value(false))
+                .andExpect(jsonPath("$.inventory.GUN").value(10))
+                .andExpect(jsonPath("$.inventory.MUNITION").value(10))
+                .andExpect(jsonPath("$.inventory.WATER").value(10))
+                .andExpect(jsonPath("$.inventory.FOOD").value(10))
+                .andExpect(jsonPath("$.location.description").value(location.getDescription()))
+                .andExpect(jsonPath("$.location.longitude").value(location.getLongitude()))
+                .andExpect(jsonPath("$.location.latitude").value(location.getLatitude()));
     }
 
     @Test

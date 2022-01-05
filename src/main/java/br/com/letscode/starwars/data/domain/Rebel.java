@@ -29,13 +29,13 @@ public class Rebel implements Serializable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @OneToOne(mappedBy = "rebel", optional = false)
+    @OneToOne(mappedBy = "rebel", optional = false, orphanRemoval = true, cascade = CascadeType.ALL)
     private RebelLocation location;
 
-    @OneToMany(mappedBy = "rebel", orphanRemoval = true)
+    @OneToMany(mappedBy = "rebel", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<RebelItem> inventory;
 
     @Column(nullable = false)
-    private Integer reportedBetrayalQuantity;
+    private Integer reportedTraitorQuantity;
 
 }
