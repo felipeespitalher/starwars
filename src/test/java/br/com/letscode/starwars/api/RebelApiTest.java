@@ -1,10 +1,8 @@
 package br.com.letscode.starwars.api;
 
-import br.com.letscode.starwars.JsonUtils;
 import br.com.letscode.starwars.data.dto.RebelDTO;
+import br.com.letscode.starwars.data.dto.RebelDetailDTO;
 import br.com.letscode.starwars.data.dto.RebelLocationDTO;
-import br.com.letscode.starwars.data.enumeration.Gender;
-import br.com.letscode.starwars.data.enumeration.Item;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -16,8 +14,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
 
+import static br.com.letscode.starwars.JsonUtils.parse;
+import static br.com.letscode.starwars.JsonUtils.writeValueAsString;
+import static br.com.letscode.starwars.RebelUtils.toRebel;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,25 +33,9 @@ public class RebelApiTest {
     @Test
     @DisplayName("Save rebel with success")
     public void whenCreate_withSuccess() throws Exception {
-        var location = new RebelLocationDTO();
-        location.setDescription("Foobar");
-        location.setLatitude(BigDecimal.ZERO);
-        location.setLongitude(BigDecimal.TEN);
+        var rebel = toRebel();
 
-        var inventory = new HashMap<Item, Integer>();
-        inventory.put(Item.GUN, 10);
-        inventory.put(Item.MUNITION, 10);
-        inventory.put(Item.WATER, 10);
-        inventory.put(Item.FOOD, 10);
-
-        var rebel = new RebelDTO();
-        rebel.setName("Foobar");
-        rebel.setBirth(LocalDate.now().minusYears(32));
-        rebel.setGender(Gender.FEMALE);
-        rebel.setLocation(location);
-        rebel.setInventory(inventory);
-
-        var content = JsonUtils.writeValueAsString(rebel);
+        var content = writeValueAsString(rebel);
         var request = post("/v1/rebel")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -67,9 +51,9 @@ public class RebelApiTest {
                 .andExpect(jsonPath("$.inventory.MUNITION").value(10))
                 .andExpect(jsonPath("$.inventory.WATER").value(10))
                 .andExpect(jsonPath("$.inventory.FOOD").value(10))
-                .andExpect(jsonPath("$.location.description").value(location.getDescription()))
-                .andExpect(jsonPath("$.location.longitude").value(location.getLongitude()))
-                .andExpect(jsonPath("$.location.latitude").value(location.getLatitude()));
+                .andExpect(jsonPath("$.location.description").value(rebel.getLocation().getDescription()))
+                .andExpect(jsonPath("$.location.longitude").value(rebel.getLocation().getLongitude()))
+                .andExpect(jsonPath("$.location.latitude").value(rebel.getLocation().getLatitude()));
     }
 
     @Test
@@ -77,7 +61,7 @@ public class RebelApiTest {
     public void whenCreate_withoutRequiredParameters() throws Exception {
         var rebel = new RebelDTO();
 
-        var content = JsonUtils.writeValueAsString(rebel);
+        var content = writeValueAsString(rebel);
         var request = post("/v1/rebel")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -97,14 +81,11 @@ public class RebelApiTest {
     @Test
     @DisplayName("Save rebel without location required parameters and birth equals to today must return 400 with messages for missing fields")
     public void whenCreate_withoutLocationRequiredParameters_andInvalidBirthDate() throws Exception {
-        var rebel = new RebelDTO();
-        rebel.setName("Foobar");
+        var rebel = toRebel();
         rebel.setBirth(LocalDate.now());
-        rebel.setGender(Gender.FEMALE);
         rebel.setLocation(new RebelLocationDTO());
-        rebel.setInventory(new HashMap<>());
 
-        var content = JsonUtils.writeValueAsString(rebel);
+        var content = writeValueAsString(rebel);
         var request = post("/v1/rebel")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -123,11 +104,35 @@ public class RebelApiTest {
     @Test
     @DisplayName("Get rebel by id")
     public void whenGet() throws Exception {
-        var request = get("/v1/rebel/1")
+        var rebel = toCreateRebel();
+
+        var request = get("/v1/rebel/" + rebel.getId())
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.name").value(rebel.getName()))
+                .andExpect(jsonPath("$.birth").value(rebel.getBirth().toString()))
+                .andExpect(jsonPath("$.gender").value(rebel.getGender().name()))
+                .andExpect(jsonPath("$.traitor").value(false))
+                .andExpect(jsonPath("$.inventory.GUN").value(10))
+                .andExpect(jsonPath("$.inventory.MUNITION").value(10))
+                .andExpect(jsonPath("$.inventory.WATER").value(10))
+                .andExpect(jsonPath("$.inventory.FOOD").value(10))
+                .andExpect(jsonPath("$.location.description").value(rebel.getLocation().getDescription()))
+                .andExpect(jsonPath("$.location.longitude").value("10.0"))
+                .andExpect(jsonPath("$.location.latitude").value("0.0"));
+    }
+
+    @Test
+    @DisplayName("Get rebel by id with empty database")
+    public void whenGet_withEmptyDatabase() throws Exception {
+        var request = get("/v1/rebel/123")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -138,7 +143,7 @@ public class RebelApiTest {
         location.setLatitude(BigDecimal.ZERO);
         location.setLongitude(BigDecimal.TEN);
 
-        var content = JsonUtils.writeValueAsString(location);
+        var content = writeValueAsString(location);
         var request = patch("/v1/rebel/1/location")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -152,7 +157,7 @@ public class RebelApiTest {
     public void whenUpdateLocation_withoutRequiredParameters() throws Exception {
         var location = new RebelLocationDTO();
 
-        var content = JsonUtils.writeValueAsString(location);
+        var content = writeValueAsString(location);
         var request = patch("/v1/rebel/1/location")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -171,11 +176,23 @@ public class RebelApiTest {
     @DisplayName("Report a traitor rebel successfully")
     public void whenReportTraitor() throws Exception {
 
-        var request = patch("/v1/rebel/1/traitor?traitor=2")
+        var request = put("/v1/rebel/1/traitor")
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
+    }
+
+    private RebelDetailDTO toCreateRebel() throws Exception {
+        var content = toRebel();
+        var postRequest = post("/v1/rebel")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(writeValueAsString(content));
+        var response = mockMvc.perform(postRequest)
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        return parse(response, RebelDetailDTO.class);
     }
 
 }

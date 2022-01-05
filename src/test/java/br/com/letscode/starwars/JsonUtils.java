@@ -12,4 +12,10 @@ public class JsonUtils {
         return mapper.writeValueAsString(object);
     }
 
+    public static <T> T parse(String json, Class<T> type) throws JsonProcessingException {
+        var mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper.readValue(json, type);
+    }
+
 }

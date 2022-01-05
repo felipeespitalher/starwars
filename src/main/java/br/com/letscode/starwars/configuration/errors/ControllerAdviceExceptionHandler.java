@@ -1,4 +1,4 @@
-package br.com.letscode.starwars.configuration.messages.errors;
+package br.com.letscode.starwars.configuration.errors;
 
 import br.com.letscode.starwars.configuration.messages.MessageProvider;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class ControllerAdviceExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> beanValidationException(HttpServletRequest request, MethodArgumentNotValidException ex) {
+    public ResponseEntity<Object> beanValidationException(MethodArgumentNotValidException ex) {
         log.debug(HttpStatus.BAD_REQUEST.name(), ex);
         List<FieldError> errors = new ArrayList<>();
         if (!CollectionUtils.isEmpty(ex.getBindingResult().getAllErrors())) {
@@ -46,6 +47,19 @@ public class ControllerAdviceExceptionHandler {
                         .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                         .timestamp(LocalDateTime.now())
                         .errors(errors)
+                        .build());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(value = NoResultException.class)
+    public ResponseEntity<?> notFound(NoResultException ex) {
+        log.debug(HttpStatus.BAD_REQUEST.name(), ex);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(HandledError.builder()
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+                        .timestamp(LocalDateTime.now())
                         .build());
     }
 
