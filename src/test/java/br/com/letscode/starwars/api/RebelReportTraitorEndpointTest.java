@@ -9,9 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static br.com.letscode.starwars.DataUtils.reportTraitor;
 import static br.com.letscode.starwars.DataUtils.toCreateRebel;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -28,7 +28,7 @@ public class RebelReportTraitorEndpointTest {
     public void whenReportTraitor() throws Exception {
         var rebel = toCreateRebel(mockMvc);
 
-        reportTraitor(rebel.getId());
+        reportTraitor(mockMvc, rebel.getId());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class RebelReportTraitorEndpointTest {
     public void whenReportTraitorOnce_mustNotMakeTraitor() throws Exception {
         var rebel = toCreateRebel(mockMvc);
 
-        reportTraitor(rebel.getId());
+        reportTraitor(mockMvc, rebel.getId());
 
         var request = get(String.format("/v1/rebel/%s", rebel.getId()))
                 .contentType(MediaType.APPLICATION_JSON);
@@ -50,9 +50,9 @@ public class RebelReportTraitorEndpointTest {
     public void whenReportTraitor_threeTimes() throws Exception {
         var rebel = toCreateRebel(mockMvc);
 
-        reportTraitor(rebel.getId());
-        reportTraitor(rebel.getId());
-        reportTraitor(rebel.getId());
+        reportTraitor(mockMvc, rebel.getId());
+        reportTraitor(mockMvc, rebel.getId());
+        reportTraitor(mockMvc, rebel.getId());
 
         var request = get(String.format("/v1/rebel/%s", rebel.getId()))
                 .contentType(MediaType.APPLICATION_JSON);
@@ -61,12 +61,5 @@ public class RebelReportTraitorEndpointTest {
                 .andExpect(jsonPath("$.traitor").value(true));
     }
 
-    private void reportTraitor(Long id) throws Exception {
-        var request = put(String.format("/v1/rebel/%s/traitor", id))
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andExpect(status().isOk());
-    }
 
 }

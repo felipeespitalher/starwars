@@ -17,6 +17,8 @@ import java.util.List;
 import static br.com.letscode.starwars.JsonUtils.parse;
 import static br.com.letscode.starwars.JsonUtils.writeValueAsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class DataUtils {
 
@@ -61,6 +63,14 @@ public class DataUtils {
         return toCreateRebel(mockMvc, content);
     }
 
+    public static RebelDetailDTO toCreateTraitorRebel(MockMvc mockMvc) throws Exception {
+        var traitor = toCreateRebel(mockMvc);
+        reportTraitor(mockMvc, traitor.getId());
+        reportTraitor(mockMvc, traitor.getId());
+        reportTraitor(mockMvc, traitor.getId());
+        return traitor;
+    }
+
     public static RebelDetailDTO toCreateRebel(MockMvc mockMvc, RebelDTO content) throws Exception {
         var postRequest = post("/v1/rebel")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -70,6 +80,14 @@ public class DataUtils {
                 .getResponse()
                 .getContentAsString();
         return parse(response, RebelDetailDTO.class);
+    }
+
+    public static void reportTraitor(MockMvc mockMvc, Long id) throws Exception {
+        var request = put(String.format("/v1/rebel/%s/traitor", id))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk());
     }
 
 }

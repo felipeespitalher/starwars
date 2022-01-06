@@ -1,16 +1,16 @@
 package br.com.letscode.starwars.api;
 
-import br.com.letscode.starwars.data.enumeration.Item;
+import br.com.letscode.starwars.data.dto.SummaryTraitorRebelsDTO;
+import br.com.letscode.starwars.data.dto.SummaryItemAverageDTO;
+import br.com.letscode.starwars.service.SummaryFacade;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.http.ResponseEntity.status;
+import java.util.List;
 
 
 @RestController
@@ -18,24 +18,24 @@ import static org.springframework.http.ResponseEntity.status;
 @RequiredArgsConstructor
 public class SummaryController {
 
-    @GetMapping("traitors")
-    public ResponseEntity<?> traitors() {
-        return status(HttpStatus.CREATED).build();
-    }
+    private final SummaryFacade facade;
 
-    @GetMapping("rebels")
-    public ResponseEntity<?> rebels() {
-        return status(HttpStatus.CREATED).build();
+    @GetMapping("traitorRebels")
+    public ResponseEntity<SummaryTraitorRebelsDTO> traitorRebels() {
+        var response = facade.traitorRebels();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("averageItemsByRebel")
-    public ResponseEntity<?> averageItemsByRebel(@RequestParam(required = false) Item item) {
-        return status(HttpStatus.CREATED).build();
+    public ResponseEntity<List<SummaryItemAverageDTO>> averageItemsByRebel() {
+        var response = facade.averageItemsByRebel();
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("lostItemsByTraitors")
-    public ResponseEntity<?> lostItemsByTraitors() {
-        return status(HttpStatus.CREATED).build();
+    @GetMapping("lostPointsByTraitors")
+    public ResponseEntity<SummaryTraitorRebelsDTO> lostPointsByTraitors() {
+        var response = facade.lostPointsByTraitors();
+        return ResponseEntity.ok(response);
     }
 
 }
