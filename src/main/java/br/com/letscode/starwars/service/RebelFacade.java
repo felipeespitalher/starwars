@@ -10,8 +10,6 @@ import br.com.letscode.starwars.service.rebel.RebelUpdateLocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class RebelFacade {
@@ -28,11 +26,6 @@ public class RebelFacade {
     public RebelDetailDTO get(Long id) {
         return getService.get(id);
     }
-
-    public List<RebelDetailDTO> search() {
-        return null;
-    }
-
 
     public void updateLocation(Long id, RebelLocationDTO request) {
         updateLocationService.updateLocation(id, request);

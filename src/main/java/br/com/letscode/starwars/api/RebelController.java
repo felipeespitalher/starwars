@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import static org.springframework.http.ResponseEntity.status;
 
@@ -32,12 +31,6 @@ public class RebelController {
     public ResponseEntity<RebelDetailDTO> get(@PathVariable Long id) {
         var rebel = facade.get(id);
         return ResponseEntity.ok(rebel);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<RebelDetailDTO>> search() {
-        var rebels = facade.search();
-        return ResponseEntity.ok(rebels);
     }
 
     @PatchMapping("{id}/location")

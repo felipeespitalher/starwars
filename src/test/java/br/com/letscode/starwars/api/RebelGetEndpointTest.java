@@ -17,7 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RebelGetEndpointTest {
+public class
+RebelGetEndpointTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,13 +38,13 @@ public class RebelGetEndpointTest {
                 .andExpect(jsonPath("$.birth").value(rebel.getBirth().toString()))
                 .andExpect(jsonPath("$.gender").value(rebel.getGender().name()))
                 .andExpect(jsonPath("$.traitor").value(false))
-                .andExpect(jsonPath("$.inventory.GUN").value(10))
-                .andExpect(jsonPath("$.inventory.MUNITION").value(10))
-                .andExpect(jsonPath("$.inventory.WATER").value(10))
-                .andExpect(jsonPath("$.inventory.FOOD").value(10))
                 .andExpect(jsonPath("$.location.description").value(rebel.getLocation().getDescription()))
                 .andExpect(jsonPath("$.location.longitude").value("10.0"))
-                .andExpect(jsonPath("$.location.latitude").value("0.0"));
+                .andExpect(jsonPath("$.location.latitude").value("0.0"))
+                .andExpect(jsonPath("$.inventory[?(@.item == \"GUN\" && @.quantity == \"10\")]").exists())
+                .andExpect(jsonPath("$.inventory[?(@.item == \"MUNITION\" && @.quantity == \"10\")]").exists())
+                .andExpect(jsonPath("$.inventory[?(@.item == \"WATER\" && @.quantity == \"10\")]").exists())
+                .andExpect(jsonPath("$.inventory[?(@.item == \"FOOD\" && @.quantity == \"10\")]").exists());
     }
 
     @Test

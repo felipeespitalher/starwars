@@ -44,13 +44,13 @@ public class RebelCreateEndpointTest {
                 .andExpect(jsonPath("$.birth").value(rebel.getBirth().toString()))
                 .andExpect(jsonPath("$.gender").value(rebel.getGender().name()))
                 .andExpect(jsonPath("$.traitor").value(false))
-                .andExpect(jsonPath("$.inventory.GUN").value(10))
-                .andExpect(jsonPath("$.inventory.MUNITION").value(10))
-                .andExpect(jsonPath("$.inventory.WATER").value(10))
-                .andExpect(jsonPath("$.inventory.FOOD").value(10))
                 .andExpect(jsonPath("$.location.description").value(rebel.getLocation().getDescription()))
                 .andExpect(jsonPath("$.location.longitude").value(rebel.getLocation().getLongitude()))
-                .andExpect(jsonPath("$.location.latitude").value(rebel.getLocation().getLatitude()));
+                .andExpect(jsonPath("$.location.latitude").value(rebel.getLocation().getLatitude()))
+                .andExpect(jsonPath("$.inventory[?(@.item == \"GUN\" && @.quantity == \"10\")]").exists())
+                .andExpect(jsonPath("$.inventory[?(@.item == \"MUNITION\" && @.quantity == \"10\")]").exists())
+                .andExpect(jsonPath("$.inventory[?(@.item == \"WATER\" && @.quantity == \"10\")]").exists())
+                .andExpect(jsonPath("$.inventory[?(@.item == \"FOOD\" && @.quantity == \"10\")]").exists());
     }
 
     @Test

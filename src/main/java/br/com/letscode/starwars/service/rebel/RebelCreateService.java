@@ -7,6 +7,8 @@ import br.com.letscode.starwars.data.repository.RebelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+
 @Service
 @RequiredArgsConstructor
 public class RebelCreateService {
@@ -16,7 +18,7 @@ public class RebelCreateService {
 
     public RebelDetailDTO create(RebelDTO request) {
         var rebel = mapper.toRebel(request);
-        rebel.setInventory(mapper.toRebelItems(rebel, request.getInventory()));
+        rebel.setInventory(new HashSet<>(mapper.toRebelItems(rebel, request.getInventory())));
         rebel.setLocation(mapper.toRebelLocationLocation(rebel, request.getLocation()));
         rebel = repository.save(rebel);
         return mapper.toRebelDetailDTO(rebel);

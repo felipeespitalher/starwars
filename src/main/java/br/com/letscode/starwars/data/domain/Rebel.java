@@ -7,7 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -33,7 +33,7 @@ public class Rebel implements Serializable {
     private RebelLocation location;
 
     @OneToMany(mappedBy = "rebel", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<RebelItem> inventory;
+    private Set<RebelItem> inventory;
 
     @Column(nullable = false)
     private Integer reportedTraitorQuantity;

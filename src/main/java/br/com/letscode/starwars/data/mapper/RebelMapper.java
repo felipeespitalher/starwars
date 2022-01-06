@@ -6,6 +6,7 @@ import br.com.letscode.starwars.data.domain.RebelItem;
 import br.com.letscode.starwars.data.domain.RebelLocation;
 import br.com.letscode.starwars.data.dto.RebelDTO;
 import br.com.letscode.starwars.data.dto.RebelDetailDTO;
+import br.com.letscode.starwars.data.dto.RebelItemDTO;
 import br.com.letscode.starwars.data.dto.RebelLocationDTO;
 import br.com.letscode.starwars.data.enumeration.Item;
 import org.mapstruct.Mapper;
@@ -14,7 +15,6 @@ import org.mapstruct.Mappings;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
@@ -38,10 +38,10 @@ public abstract class RebelMapper {
 
     @Mappings({
             @Mapping(target = "rebel", source = "rebel"),
-            @Mapping(target = "item", source = "item"),
-            @Mapping(target = "quantity", source = "quantity")
+            @Mapping(target = "item", source = "tradeItem.item"),
+            @Mapping(target = "quantity", source = "tradeItem.quantity")
     })
-    public abstract RebelItem toRebelItem(Rebel rebel, Item item, Integer quantity);
+    public abstract RebelItem toRebelItem(Rebel rebel, RebelItemDTO tradeItem);
 
     @Mappings({
             @Mapping(target = "rebel", source = "rebel"),
@@ -53,14 +53,21 @@ public abstract class RebelMapper {
 
     public abstract RebelLocationDTO toRebelLocationLocationDTO(RebelLocation source);
 
-    public List<RebelItem> toRebelItems(Rebel rebel, Map<Item, Integer> source) {
-        return source.keySet().stream()
-                .map(item -> toRebelItem(rebel, item, source.get(item)))
+    public List<RebelItem> toRebelItems(Rebel rebel, List<RebelItemDTO> source) {
+        var items = source.stream()
+                .map(item -> toRebelItem(rebel, item))
                 .collect(Collectors.toList());
-    }
-
-    protected Map<Item, Integer> toInventory(List<RebelItem> source) {
-        return source.stream().collect(Collectors.toMap(RebelItem::getItem, RebelItem::getQuantity));
+        if (items.size() != Item.values().length) {
+            for (Item item : Item.values()) {
+                if (items.stream().noneMatch(rebelItem -> rebelItem.getItem().equals(item))) {
+                    var rebelItem = new RebelItemDTO();
+                    rebelItem.setItem(item);
+                    rebelItem.setQuantity(0);
+                    items.add(toRebelItem(rebel, rebelItem));
+                }
+            }
+        }
+        return items;
     }
 
     protected Boolean isRebelTraitor(Rebel source) {

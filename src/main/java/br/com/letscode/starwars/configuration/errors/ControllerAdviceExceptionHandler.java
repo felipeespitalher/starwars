@@ -39,6 +39,13 @@ public class ControllerAdviceExceptionHandler {
                     .field(error.getField())
                     .message(error.getDefaultMessage())
                     .build()));
+            if (CollectionUtils.isEmpty(errors)) {
+                ex.getBindingResult().getAllErrors().forEach(error -> errors.add(
+                        FieldError.builder()
+                                .message(error.getDefaultMessage())
+                                .build()
+                ));
+            }
         }
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

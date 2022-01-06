@@ -1,6 +1,7 @@
 package br.com.letscode.starwars.api;
 
 import br.com.letscode.starwars.data.dto.TradeDTO;
+import br.com.letscode.starwars.service.trade.TradeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,12 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class TradeController {
 
+    private final TradeService service;
+
     @PostMapping
     public ResponseEntity<?> trade(@Valid @RequestBody TradeDTO request) {
-        return ResponseEntity.ok().build();
+        service.trade(request);
+        return ResponseEntity.accepted().build();
     }
 
 }
