@@ -1,5 +1,6 @@
 package br.com.letscode.starwars.data.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,11 +12,13 @@ import java.math.BigDecimal;
 @Getter
 @Table(name = "rebel_locations")
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class RebelLocation implements Serializable {
 
     @Id
     @OneToOne
     @JoinColumn(name = "rebel_id")
+    @EqualsAndHashCode.Include
     private Rebel rebel;
 
     @Column(nullable = false)

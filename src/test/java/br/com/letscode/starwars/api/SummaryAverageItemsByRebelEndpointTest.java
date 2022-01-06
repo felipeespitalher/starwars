@@ -7,11 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static br.com.letscode.starwars.DataUtils.toCreateRebel;
-import static br.com.letscode.starwars.DataUtils.toCreateTraitorRebel;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,28 +17,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class SummaryTraitorRebelsEndpointTest {
+public class SummaryAverageItemsByRebelEndpointTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("Check how many traitors")
-    public void whenSummaryTraitors() throws Exception {
+    @DisplayName("Check average items per rebel")
+    public void checkAverageItemsPerRebel() throws Exception {
         toCreateRebel(mockMvc);
         toCreateRebel(mockMvc);
         toCreateRebel(mockMvc);
-        toCreateTraitorRebel(mockMvc);
 
-        var request = get("/v1/summary/traitorRebels")
+        var request = get("/v1/summary/averageItemsByRebel")
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rebels").value(3))
-                .andExpect(jsonPath("$.traitors").value(1));
-
+                .andExpect(jsonPath("$.[?(@.item == \"FOOD\" && @.quantity == \"10.0\")]").exists())
+                .andExpect(jsonPath("$.[?(@.item == \"GUN\" && @.quantity == \"10.0\")]").exists())
+                .andExpect(jsonPath("$.[?(@.item == \"MUNITION\" && @.quantity == \"10.0\")]").exists())
+                .andExpect(jsonPath("$.[?(@.item == \"WATER\" && @.quantity == \"10.0\")]").exists());
     }
 
 }

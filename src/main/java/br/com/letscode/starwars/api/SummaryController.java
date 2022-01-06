@@ -1,7 +1,7 @@
 package br.com.letscode.starwars.api;
 
-import br.com.letscode.starwars.data.dto.SummaryTraitorRebelsDTO;
 import br.com.letscode.starwars.data.dto.SummaryItemAverageDTO;
+import br.com.letscode.starwars.data.dto.SummaryTraitorRebelsDTO;
 import br.com.letscode.starwars.service.SummaryFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
