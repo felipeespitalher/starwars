@@ -6,10 +6,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class SummaryItemAverageDTO {
+public class SummaryTraitorItemsDTO {
 
     private final Item item;
-
-    private final Double quantity;
+    private final Long quantity;
 
 }

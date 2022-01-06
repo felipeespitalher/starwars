@@ -1,6 +1,7 @@
 package br.com.letscode.starwars.api;
 
 import br.com.letscode.starwars.data.dto.SummaryItemAverageDTO;
+import br.com.letscode.starwars.data.dto.SummaryLostPointsDTO;
 import br.com.letscode.starwars.data.dto.SummaryTraitorRebelsDTO;
 import br.com.letscode.starwars.service.SummaryFacade;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class SummaryController {
     }
 
     @GetMapping("lostPointsByTraitors")
-    public ResponseEntity<SummaryTraitorRebelsDTO> lostPointsByTraitors() {
+    public ResponseEntity<SummaryLostPointsDTO> lostPointsByTraitors() {
         var response = facade.lostPointsByTraitors();
         return ResponseEntity.ok(response);
     }

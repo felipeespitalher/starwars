@@ -1,8 +1,10 @@
 package br.com.letscode.starwars.service;
 
 import br.com.letscode.starwars.data.dto.SummaryItemAverageDTO;
+import br.com.letscode.starwars.data.dto.SummaryLostPointsDTO;
 import br.com.letscode.starwars.data.dto.SummaryTraitorRebelsDTO;
 import br.com.letscode.starwars.service.summary.SummaryAverageItemsService;
+import br.com.letscode.starwars.service.summary.SummaryLostPointsTraitorService;
 import br.com.letscode.starwars.service.summary.SummaryRebelTraitorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ public class SummaryFacade {
 
     private final SummaryRebelTraitorService rebelTraitorService;
     private final SummaryAverageItemsService averageItemsService;
+    private final SummaryLostPointsTraitorService lostPointsTraitorService;
 
     public SummaryTraitorRebelsDTO traitorRebels() {
         return rebelTraitorService.traitorRebels();
@@ -24,8 +27,8 @@ public class SummaryFacade {
         return averageItemsService.averageItemsByRebel();
     }
 
-    public SummaryTraitorRebelsDTO lostPointsByTraitors() {
-        return null;
+    public SummaryLostPointsDTO lostPointsByTraitors() {
+        return lostPointsTraitorService.lostPointsByTraitors();
     }
 
 }
