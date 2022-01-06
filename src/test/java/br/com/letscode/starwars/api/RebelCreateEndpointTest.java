@@ -13,9 +13,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
-import static br.com.letscode.starwars.JsonUtils.writeValueAsString;
 import static br.com.letscode.starwars.DataUtils.toRebel;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static br.com.letscode.starwars.JsonUtils.writeValueAsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -97,17 +97,5 @@ public class RebelCreateEndpointTest {
                 .andExpect(jsonPath("$.errors[?(@.field == \"location.longitude\" && @.message == \"Por favor, informe a longitude da localização do rebelde\")]").exists())
                 .andExpect(jsonPath("$.errors[?(@.field == \"location.description\" && @.message == \"Por favor, informe a descrição da localização do rebelde\")]").exists());
     }
-
-    @Test
-    @DisplayName("Report a traitor rebel successfully")
-    public void whenReportTraitor() throws Exception {
-
-        var request = put("/v1/rebel/1/traitor")
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andExpect(status().isOk());
-    }
-
 
 }

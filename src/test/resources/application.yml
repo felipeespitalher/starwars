@@ -21,3 +21,6 @@ management:
     export:
       prometheus:
         enabled: true
+
+star-wars:
+  maximumTraitorReports: 3
